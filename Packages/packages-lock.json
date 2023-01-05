@@ -1,5 +1,11 @@
 {
   "dependencies": {
+    "com.tatsuki-yamada.reusableobjectmanager": {
+      "version": "file:com.tatsuki-yamada.reusableobjectmanager",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
+    },
     "com.unity.2d.animation": {
       "version": "7.0.4",
       "depth": 1,
