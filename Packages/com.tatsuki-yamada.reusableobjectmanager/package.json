@@ -1,6 +1,6 @@
 {
   "name": "com.tatsuki-yamada.reusableobjectmanager",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "displayName": "ReusableObjectManager",
   "description": "This is the useful manager when you need reuse objects.\nThis package needs UniRx."
 }

@@ -25,7 +25,7 @@ namespace ReusableObjectManagement
         /// 生成・再利用後、isActive=trueを呼ぶ前に再利用スタックに投入されるのを防ぐため、再利用して良いかを別に示したフラグ
         /// </summary>
         /// <value></value>
-        public bool canReuse { get; }
+        public bool canReuse { get; set;}
     }
 
 
@@ -182,7 +182,10 @@ namespace ReusableObjectManagement
                 {
                     // 生成したオブジェクトのisActive = trueよりも検知が早いと再利用されてしまうため、フラグ管理を1枚噛ませている。
                     if (newObject.canReuse)
+                    {
+                        newObject.canReuse = false;
                         AddStack(newObject);
+                    }
                 })
                 .AddTo(this);
 
