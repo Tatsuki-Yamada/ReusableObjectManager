@@ -4,17 +4,17 @@ using UnityEngine;
 using UniRx;
 using ReusableObjectManagement;
 
-public class ObjectA : MonoBehaviour, IHasActive
+public class ObjectA : MonoBehaviour, IHasAlive
 {
     Coroutine disableCoroutine;
-    public BoolReactiveProperty isActive { get; set; } = new BoolReactiveProperty(false);
-    public IObservable<bool> isActiveObserver => isActive;
-    public bool canReuse { get; private set; } = false;
+    public BoolReactiveProperty isAlive { get; set; } = new BoolReactiveProperty(false);
+    public IObservable<bool> isAliveObserver => isAlive;
+    public bool canReuse { get; set; } = false;
 
 
     public void Init()
     {
-        isActive.Value = true;
+        isAlive.Value = true;
         canReuse = true;
         disableCoroutine = StartCoroutine(WaitDisable());
         this.GetComponent<SpriteRenderer>().enabled = true;
@@ -23,7 +23,7 @@ public class ObjectA : MonoBehaviour, IHasActive
 
     private void Disable()
     {
-        isActive.Value = false;
+        isAlive.Value = false;
         canReuse = false;
         StopCoroutine(disableCoroutine);
         this.GetComponent<SpriteRenderer>().enabled = false;

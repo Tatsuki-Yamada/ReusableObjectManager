@@ -8,24 +8,24 @@ namespace ReusableObjectManagement
     /// <summary>
     /// ReusableObjectManagerで管理するオブジェクトに必要なインターフェース
     /// </summary>
-    public interface IHasActive
+    public interface IHasAlive
     {
         /// <summary>
         /// オブジェクトが生きているか示すフラグ。falseのとき、再利用するスタックに投入される。
         /// </summary>
         /// <value></value>
-        public BoolReactiveProperty isActive { get; set; }
+        public BoolReactiveProperty isAlive { get; set; }
 
         /// <summary>
-        /// isActiveへの参照を持つObserver
+        /// isAliveへの参照を持つObserver
         /// </summary>
-        public IObservable<bool> isActiveObserver => isActive;
+        public IObservable<bool> isAliveObserver => isAlive;
 
         /// <summary>
-        /// 生成・再利用後、isActive=trueを呼ぶ前に再利用スタックに投入されるのを防ぐため、再利用して良いかを別に示したフラグ
+        /// 生成・再利用後、isAlive=trueを呼ぶ前に再利用スタックに投入されるのを防ぐため、再利用して良いかを別に示したフラグ
         /// </summary>
         /// <value></value>
-        public bool canReuse { get; set;}
+        public bool canReuse { get; set; }
     }
 
 
@@ -50,7 +50,7 @@ namespace ReusableObjectManagement
         /// </summary>
         /// <typeparam name="T"> 生成・再利用するクラス </typeparam>
         /// <returns> 生成・再利用したTクラス </returns>
-        public T CreateOrReuse<T>() where T : IHasActive
+        public T CreateOrReuse<T>() where T : IHasAlive
         {
             // T型の管理リストがあるか確認する。
             if (CheckExistManagementList<T>(out List<T> targetManageList) == false)
@@ -144,7 +144,7 @@ namespace ReusableObjectManagement
         /// <param name="outObject"> 再利用スタックから取り出したオブジェクト </param>
         /// <typeparam name="T"> オブジェクトの型 </typeparam>
         /// <returns> 再利用スタックにオブジェクトが入っているか </returns>
-        private bool CheckExistReuseObject<T>(out T outObject) where T : IHasActive
+        private bool CheckExistReuseObject<T>(out T outObject) where T : IHasAlive
         {
             // 管理リストのインデックス番号をもらう。
             objectListIndexDict.TryGetValue(typeof(T), out int index);
@@ -170,17 +170,17 @@ namespace ReusableObjectManagement
         /// <param name="toInstancePrefab"> 生成するオブジェクトのPrefab </param>
         /// <typeparam name="T"> 生成するオブジェクトの型 </typeparam>
         /// <returns> 生成したオブジェクトのTクラス </returns>
-        private T CreateNewObject<T>(GameObject toInstancePrefab) where T : IHasActive
+        private T CreateNewObject<T>(GameObject toInstancePrefab) where T : IHasAlive
         {
             // 新規オブジェクトを作成する。
             T newObject = Instantiate(toInstancePrefab).GetComponent<T>();
 
-            // isActiveがfalseになったとき、再利用スタックに格納する処理を登録する。
-            newObject.isActiveObserver
+            // isAliveがfalseになったとき、再利用スタックに格納する処理を登録する。
+            newObject.isAliveObserver
                 .Where(flag => flag == false)
                 .Subscribe(nouse =>
                 {
-                    // 生成したオブジェクトのisActive = trueよりも検知が早いと再利用されてしまうため、フラグ管理を1枚噛ませている。
+                    // 生成したオブジェクトのisAlive = trueよりも検知が早いと再利用されてしまうため、フラグ管理を1枚噛ませている。
                     if (newObject.canReuse)
                     {
                         newObject.canReuse = false;
@@ -198,7 +198,7 @@ namespace ReusableObjectManagement
         /// </summary>
         /// <param name="toPush"> 投入するオブジェクト </param>
         /// <typeparam name="T"> オブジェクトの型 </typeparam>
-        private void AddStack<T>(T toPush) where T : IHasActive
+        private void AddStack<T>(T toPush) where T : IHasAlive
         {
             // 管理リストのインデックス番号をもらう。
             objectListIndexDict.TryGetValue(typeof(T), out int index);
